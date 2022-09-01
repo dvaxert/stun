@@ -16,7 +16,7 @@ class MessageBuilder;
 
 class Message {
  public:
-  static MessageBuilder& Builder();
+  static MessageBuilder Builder();
   ~Message();
 
   MessageType Type() const;
@@ -29,7 +29,7 @@ class Message {
 
   void SetType(const MessageType type);
   void SetTransactionId(std::vector<uint8_t> id);
-  void AddAttribute(const std::shared_ptr<IAttribute> attribute);
+  void AddAttribute(std::shared_ptr<IAttribute> attribute);
 
   void Serialize(ISerializer& s) const;
 

@@ -32,9 +32,10 @@ AddressAttribute::AddressAttribute(uint32_t address, uint16_t port)
 
 //------------------------------------------------------------------------------
 
-AddressAttribute::AddressAttribute(std::string address, uint16_t port)
-    : address_(
-          boost::asio::ip::address::from_string(address).to_v4().to_uint()),
+AddressAttribute::AddressAttribute(std::string_view address, uint16_t port)
+    : address_(boost::asio::ip::address::from_string(address.data())
+                   .to_v4()
+                   .to_uint()),
       port_(std::move(port)) {}
 
 }  // namespace stun

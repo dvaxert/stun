@@ -8,10 +8,10 @@
 
 namespace stun {
 
-class AddressAttribute : IAttribute {
+class AddressAttribute : public IAttribute {
  public:
   AddressAttribute(uint32_t address, uint16_t port);
-  AddressAttribute(std::string address, uint16_t port);
+  AddressAttribute(std::string_view address, uint16_t port);
 
   virtual uint8_t Family() const;
   virtual uint16_t Port() const;
