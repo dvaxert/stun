@@ -8,8 +8,8 @@
 
 using namespace stun;
 
-TEST(MessageTest, create_binding_request_default) {
-  auto message = Message::Builder()
+TEST(BindingRequestTest, create_default) {
+  auto message = Message::New()
                      .WithType(MessageType::BindingRequest)
                      .WithRandomTransactionId()
                      .Build();
@@ -21,12 +21,12 @@ TEST(MessageTest, create_binding_request_default) {
 
 //------------------------------------------------------------------------------
 
-TEST(MessageTest, create_binding_with_transaction_id) {
+TEST(BindingRequestTest, create_with_transaction_id) {
   const std::vector<uint8_t> id = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
                                    0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
                                    0x0C, 0x0D, 0x0E, 0x0F};
 
-  auto message = Message::Builder()
+  auto message = Message::New()
                      .WithType(MessageType::BindingRequest)
                      .WithTransactionId(id)
                      .Build();
@@ -38,8 +38,8 @@ TEST(MessageTest, create_binding_with_transaction_id) {
 
 //------------------------------------------------------------------------------
 
-TEST(MessageTest, create_binding_request_with_attributes) {
-  auto message = Message::Builder()
+TEST(BindingRequestTest, create_with_attributes) {
+  auto message = Message::New()
                      .WithType(MessageType::BindingRequest)
                      .WithRandomTransactionId()
                      .WithAttribute<ResponseAddress>("127.0.0.1", 1234)
@@ -57,8 +57,8 @@ TEST(MessageTest, create_binding_request_with_attributes) {
 
 //------------------------------------------------------------------------------
 
-TEST(MessageTest, create_binding_request_with_integrity) {
-  auto message = Message::Builder()
+TEST(BindingRequestTest, create_with_integrity) {
+  auto message = Message::New()
                      .WithType(MessageType::BindingRequest)
                      .WithRandomTransactionId()
                      .WithIntegrity()
@@ -72,8 +72,8 @@ TEST(MessageTest, create_binding_request_with_integrity) {
 
 //------------------------------------------------------------------------------
 
-TEST(MessageTest, create_binding_request_with_all_attributes) {
-  auto message = Message::Builder()
+TEST(BindingRequestTest, create_with_all_attributes) {
+  auto message = Message::New()
                      .WithType(MessageType::BindingRequest)
                      .WithRandomTransactionId()
                      .WithAttribute<ResponseAddress>("127.0.0.1", 1234)
@@ -91,4 +91,78 @@ TEST(MessageTest, create_binding_request_with_all_attributes) {
   ASSERT_TRUE(message.HasAttribute(AttributeType::MessageIntegrity));
   ASSERT_EQ((*message.AllAtributes().rbegin())->Type(),
             AttributeType::MessageIntegrity);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(BindingRequestTest, serialize) {
+  const std::vector<uint8_t> id = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                                   0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+                                   0x0C, 0x0D, 0x0E, 0x0F};
+
+  auto message = Message::New()
+                     .WithType(MessageType::BindingRequest)
+                     .WithTransactionId(id)
+                     .Build();
+  Serializer s{};
+  s& message;
+
+  std::vector<uint8_t> check = {0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x02,
+                                0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+                                0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
+
+  ASSERT_EQ(s.Data().size(), check.size());
+  ASSERT_EQ(s.Data(), check);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(BindingRequestTest, serialize_with_attribute) {
+  const std::vector<uint8_t> id = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                                   0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+                                   0x0C, 0x0D, 0x0E, 0x0F};
+
+  auto message = Message::New()
+                     .WithType(MessageType::BindingRequest)
+                     .WithTransactionId(id)
+                     .WithAttribute<ResponseAddress>("127.0.0.1", 1234)
+                     .Build();
+  Serializer s{};
+  s& message;
+
+  const std::vector<uint8_t> check = {
+      0x00, 0x01, 0x00, 0x0C, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+      0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00, 0x02,
+      0x00, 0x08, 0x00, 0x01, 0x04, 0xD2, 0x7F, 0x00, 0x00, 0x01};
+
+  ASSERT_EQ(s.Data().size(), check.size());
+  ASSERT_EQ(s.Data(), check);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(BindingRequestTest, serialize_with_integrity) {
+  const std::vector<uint8_t> id = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                                   0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+                                   0x0C, 0x0D, 0x0E, 0x0F};
+
+  auto message = Message::New()
+                     .WithType(MessageType::BindingRequest)
+                     .WithTransactionId(id)
+                     .WithAttribute<ResponseAddress>("127.0.0.1", 1234)
+                     .WithIntegrity()
+                     .Build();
+  Serializer s{};
+  s& message;
+
+  std::vector<uint8_t> check = {
+      0x00, 0x01, 0x00, 0x4C, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+      0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00, 0x02, 0x00, 0x08,
+      0x00, 0x01, 0x04, 0xD2, 0x7F, 0x00, 0x00, 0x01, 0x00, 0x08, 0x00, 0x3C,
+      0xA8, 0xEC, 0xBF, 0xC7, 0xC7, 0xC0, 0xA6, 0xB3, 0xBE, 0x3D, 0x6B, 0xEE,
+      0x0A, 0x66, 0x4D, 0x42, 0x82, 0xB2, 0xEF, 0xC8};
+  check.insert(check.end(), 40, 0);
+
+  ASSERT_EQ(s.Data().size(), check.size());
+  ASSERT_EQ(s.Data(), check);
 }

@@ -14,7 +14,7 @@ MessageType Message::Type() const { return type_; }
 
 //------------------------------------------------------------------------------
 
-MessageBuilder Message::Builder() { return MessageBuilder{}; }
+MessageBuilder Message::New() { return MessageBuilder{}; }
 
 //------------------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ void Message::AddAttribute(const std::shared_ptr<IAttribute> attribute) {
 //------------------------------------------------------------------------------
 
 void Message::Serialize(ISerializer& s) const {
-  s& utils::to_integral(Type()) & Length();
+  s& utils::to_integral(Type()) & Length() & TransactionId();
   for (auto attr : attributes_) s& attr;
 }
 

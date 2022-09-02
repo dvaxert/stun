@@ -39,7 +39,7 @@ class MessageBuilder final {
 
 template <class Attribute, class... Args>
 MessageBuilder& MessageBuilder::WithAttribute(Args&&... args) {
-  // static_assert(!std::is_same_v<Attribute, MessageIntegrity>);
+  static_assert(!std::is_same_v<Attribute, MessageIntegrity>);
 
   message_.AddAttribute(
       std::make_shared<Attribute>(std::forward<Args>(args)...));

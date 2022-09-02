@@ -16,7 +16,7 @@ class MessageBuilder;
 
 class Message {
  public:
-  static MessageBuilder Builder();
+  static MessageBuilder New();
   ~Message();
 
   MessageType Type() const;

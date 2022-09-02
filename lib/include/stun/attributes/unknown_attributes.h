@@ -8,6 +8,11 @@ namespace stun {
 class UnknownAttributes final : public IAttribute {
  public:
   UnknownAttributes() = default;
+
+  template <class... Args>
+  UnknownAttributes(Args&&... args)
+      : UnknownAttributes({std::forward<Args>(args)...}) {}
+
   UnknownAttributes(std::initializer_list<AttributeType> attributes);
   ~UnknownAttributes() override = default;
 

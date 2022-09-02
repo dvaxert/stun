@@ -6,7 +6,15 @@ find_package(Boost REQUIRED)
 
 # Configure test target
 
-add_executable (message_test main.cc message_test.cc)
+add_executable (message_test 
+    main.cc 
+    binding_request.cc
+    binding_response.cc
+    binding_error_response.cc
+    shared_secret_request.cc
+    shared_secret_response.cc
+    shared_secret_error_response.cc
+)
 
 target_link_libraries (message_test stun testing_utils GTest::GTest GTest::Main Boost::boost)
 

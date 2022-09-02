@@ -1,4 +1,5 @@
 #include <cassert>
+#include <memory>
 #include <random>
 
 #include "stun/message.h"
@@ -107,6 +108,7 @@ bool MessageBuilder::CheckMessageIsCorrect() const {
       if (message_.AllAtributes().size() != 0) {
         return false;
       }
+      break;
     }
     case MessageType::SharedSecretResponse: {
       const auto invalid_attributes = {
