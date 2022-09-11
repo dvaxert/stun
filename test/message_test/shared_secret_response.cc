@@ -42,3 +42,30 @@ TEST(SharedSecretResponseTest, create_with_transaction_id) {
   ASSERT_TRUE(message.HasAttribute(AttributeType::Username));
   ASSERT_TRUE(message.HasAttribute(AttributeType::Password));
 }
+
+//------------------------------------------------------------------------------
+
+TEST(SharedSecretResponseTest, serialize) {
+  const std::vector<uint8_t> id = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                                   0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+                                   0x0C, 0x0D, 0x0E, 0x0F};
+
+  auto message = Message::New()
+                     .WithType(MessageType::SharedSecretResponse)
+                     .WithTransactionId(id)
+                     .WithAttribute<Username>("SomeName")
+                     .WithAttribute<Password>("SomePass")
+                     .Build();
+  Serializer s{};
+  s& message;
+
+  std::vector<uint8_t> check = {
+      0x01, 0x02, 0x00, 0x20, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+      0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00, 0x06,
+      0x00, 0x0c, 'S',  'o',  'm',  'e',  'N',  'a',  'm',  'e',  0x00,
+      0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x0c, 'S',  'o',  'm',  'e',
+      'P',  'a',  's',  's',  0x00, 0x00, 0x00, 0x00};
+
+  ASSERT_EQ(s.Data().size(), check.size());
+  ASSERT_EQ(s.Data(), check);
+}

@@ -4,6 +4,7 @@
 #include <stun/message.h>
 #include <stun/message_builder.h>
 #include <stun/serializer.h>
+#include <testing_utils/error_code_data.h>
 
 using namespace stun;
 
@@ -77,9 +78,59 @@ TEST(BindingErrorResponseTest, serialize) {
   Serializer s{};
   s& message;
 
-  std::vector<uint8_t> check = {0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x02,
+  std::vector<uint8_t> error_code_attribute = {0x00, 0x09, 0x00, 0x78,
+                                               0x00, 0x00, 0x04, 0x00};
+  error_code_attribute.insert(error_code_attribute.end(),
+                              tests::BadRequestMsg.begin(),
+                              tests::BadRequestMsg.end());
+  error_code_attribute.emplace_back(0);
+
+  std::vector<uint8_t> check = {0x01, 0x11, 0x00, 0x7c, 0x00, 0x01, 0x02,
                                 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
                                 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
+  check.insert(check.end(), error_code_attribute.begin(),
+               error_code_attribute.end());
+
+  ASSERT_EQ(s.Data().size(), check.size());
+  ASSERT_EQ(s.Data(), check);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(BindingErrorResponseTest, serialize_with_unknown_attributes) {
+  const std::vector<uint8_t> id = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                                   0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+                                   0x0C, 0x0D, 0x0E, 0x0F};
+
+  auto message =
+      Message::New()
+          .WithType(MessageType::BindingErrorResponse)
+          .WithTransactionId(id)
+          .WithAttribute<ErrorCode>(
+              ErrorCode::PredefinedError::UnknownAttribute)
+          .WithAttribute<UnknownAttributes>(AttributeType::ChangedAddress,
+                                            AttributeType::MappedAddress)
+          .Build();
+  Serializer s{};
+  s& message;
+
+  std::vector<uint8_t> error_code_attribute = {0x00, 0x09, 0x00, 0x48,
+                                               0x00, 0x00, 0x04, 0x14};
+  error_code_attribute.insert(error_code_attribute.end(),
+                              tests::UnknownAttributeMsg.begin(),
+                              tests::UnknownAttributeMsg.end());
+  error_code_attribute.emplace_back(0);
+
+  std::vector<uint8_t> unknown_attributes_attribute = {0x00, 0x0a, 0x00, 0x04,
+                                                       0x00, 0x05, 0x00, 0x01};
+
+  std::vector<uint8_t> check = {0x01, 0x11, 0x00, 0x54, 0x00, 0x01, 0x02,
+                                0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+                                0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
+  check.insert(check.end(), error_code_attribute.begin(),
+               error_code_attribute.end());
+  check.insert(check.end(), unknown_attributes_attribute.begin(),
+               unknown_attributes_attribute.end());
 
   ASSERT_EQ(s.Data().size(), check.size());
   ASSERT_EQ(s.Data(), check);
