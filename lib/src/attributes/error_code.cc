@@ -102,7 +102,7 @@ std::string ErrorCode::Message() const { return message_; }
 
 //------------------------------------------------------------------------------
 
-void ErrorCode::Serialize(ISerializer& s) const {
+void ErrorCode::Serialize(Serializer& s) const {
   uint8_t error_class = Code() / 100;
   uint8_t error_number = Code() % 100;
 
@@ -117,7 +117,7 @@ size_t ErrorCode::AlignSize() const { return 4 - message_.size() % 4; }
 
 //------------------------------------------------------------------------------
 
-stun::AttributeType ErrorCode::Type() const { return AttributeType::ErrorCode; }
+AttributeType ErrorCode::Type() const { return AttributeType::ErrorCode; }
 
 //------------------------------------------------------------------------------
 

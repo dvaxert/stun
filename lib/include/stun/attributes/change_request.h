@@ -15,7 +15,7 @@ class ChangeRequest final : public IAttribute {
   bool ChangeIp() const;
   bool ChangePort() const;
 
-  void Serialize(ISerializer& s) const override;
+  void Serialize(Serializer& s) const override;
 
  private:
   uint16_t DataLength() const override;

@@ -30,7 +30,7 @@ class ErrorCode final : public IAttribute {
   uint32_t Code() const;
   std::string Message() const;
 
-  void Serialize(ISerializer& s) const override;
+  void Serialize(Serializer& s) const override;
 
  private:
   size_t AlignSize() const;

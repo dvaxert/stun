@@ -13,7 +13,7 @@ class MessageIntegrity final : public IAttribute {
   AttributeType Type() const override;
   std::vector<uint8_t> Value() const;
 
-  void Serialize(ISerializer& s) const override;
+  void Serialize(Serializer& s) const override;
 
  private:
   uint16_t DataLength() const override;

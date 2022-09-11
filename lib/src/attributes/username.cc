@@ -19,7 +19,7 @@ std::string Username::Value() const { return name_; }
 
 //------------------------------------------------------------------------------
 
-void Username::Serialize(ISerializer& s) const {
+void Username::Serialize(Serializer& s) const {
   s& utils::to_integral(Type()) & DataLength() & Value() &
       std::vector<uint8_t>(AlignSize(), 0);
 }

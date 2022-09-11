@@ -6,6 +6,7 @@
 #include "stun/message.h"
 #include "stun/message_builder.h"
 #include "stun/serializer.h"
+#include "stun/deserializer.h"
 #include "stun/utils/to_integral.h"
 
 namespace stun {
@@ -92,7 +93,7 @@ void Message::AddAttribute(const std::shared_ptr<IAttribute> attribute) {
 
 //------------------------------------------------------------------------------
 
-void Message::Serialize(ISerializer& s) const {
+void Message::Serialize(Serializer& s) const {
   s& utils::to_integral(Type()) & Length() & TransactionId();
   for (auto attr : attributes_) s& attr;
 }

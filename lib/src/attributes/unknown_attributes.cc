@@ -3,7 +3,7 @@
 
 namespace stun {
 
-void UnknownAttributes::Serialize(ISerializer& s) const {
+void UnknownAttributes::Serialize(Serializer& s) const {
   s& utils::to_integral(Type()) & DataLength();
   for (auto attribute : attributes_) {
     s& utils::to_integral(attribute);

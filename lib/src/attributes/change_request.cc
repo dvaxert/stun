@@ -16,7 +16,7 @@ bool ChangeRequest::ChangePort() const { return change_port_; }
 
 //------------------------------------------------------------------------------
 
-void ChangeRequest::Serialize(ISerializer& s) const {
+void ChangeRequest::Serialize(Serializer& s) const {
   constexpr uint16_t length = 0x0004;
   uint32_t flags = ChangeIp() << 2 | ChangePort() << 1;
 

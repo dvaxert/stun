@@ -4,7 +4,7 @@
 
 namespace stun {
 
-void AddressAttribute::Serialize(ISerializer& s) const {
+void AddressAttribute::Serialize(Serializer& s) const {
   s& utils::to_integral(Type()) & DataLength() & uint8_t(0x00) & Family() &
       Port() & Address();
 }

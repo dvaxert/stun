@@ -15,7 +15,7 @@ class Username final : public IAttribute {
   AttributeType Type() const override;
   std::string Value() const;
 
-  void Serialize(ISerializer& s) const;
+  void Serialize(Serializer& s) const;
 
  private:
   size_t AlignSize() const;

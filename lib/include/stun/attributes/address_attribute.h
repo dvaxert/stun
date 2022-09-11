@@ -17,7 +17,7 @@ class AddressAttribute : public IAttribute {
   virtual uint16_t Port() const;
   virtual uint32_t Address() const;
 
-  void Serialize(ISerializer& s) const override;
+  void Serialize(Serializer& s) const override;
 
  protected:
   virtual uint16_t DataLength() const override;

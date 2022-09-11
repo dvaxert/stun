@@ -15,7 +15,7 @@ class Password final : public IAttribute {
   AttributeType Type() const override;
   std::string Value() const;
 
-  void Serialize(ISerializer& s) const override;
+  void Serialize(Serializer& s) const override;
 
  private:
   uint16_t DataLength() const override;

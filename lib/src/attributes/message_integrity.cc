@@ -26,7 +26,7 @@ std::vector<uint8_t> MessageIntegrity::Value() const { return hmac1_key_; }
 
 //------------------------------------------------------------------------------
 
-void MessageIntegrity::Serialize(ISerializer& s) const {
+void MessageIntegrity::Serialize(Serializer& s) const {
   s& utils::to_integral(Type()) & DataLength() & Value() &
       std::vector<uint8_t>(40, 0);
 }

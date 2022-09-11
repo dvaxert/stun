@@ -31,7 +31,7 @@ class Message {
   void SetTransactionId(std::vector<uint8_t> id);
   void AddAttribute(std::shared_ptr<IAttribute> attribute);
 
-  void Serialize(ISerializer& s) const;
+  void Serialize(Serializer& s) const;
 
  protected:
   friend MessageBuilder;
