@@ -26,6 +26,20 @@ void Password::Serialize(Serializer& s) const {
 
 //------------------------------------------------------------------------------
 
-size_t Password::AlignSize() const { return 4 - password_.size() % 4; }
+void Password::Deserialize(Deserializer& d) {
+  auto length = d.Get<uint16_t>();
+  password_ = d.GetString(length);
+}
+
+//------------------------------------------------------------------------------
+
+size_t Password::AlignSize() const {
+  auto align = password_.size() % 4;
+
+  if (align != 0) {
+    return 4 - align;
+  }
+  return 0;
+}
 
 }  // namespace stun

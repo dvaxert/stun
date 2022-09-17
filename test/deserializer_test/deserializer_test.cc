@@ -137,3 +137,97 @@ TEST(DeserializerTest, deserialize_string) {
 
   ASSERT_EQ(d.GetString(12), std::string("Some text"));
 }
+
+//------------------------------------------------------------------------------
+
+TEST(DeserializerTest, throw_on_deserialize_string) {
+  std::vector<uint8_t> testing_data = {'S', 'o', 'm', 'e',  ' ',  't',
+                                       'e', 'x', 't', '\0', '\0', '\0'};
+  auto d = stun::Deserializer{testing_data};
+
+  ASSERT_ANY_THROW(d.GetString(13));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(DeserializerTest, deserialize_array_uint8) {
+  std::vector<uint8_t> testing_data = {0x00, 0x01, 0x02, 0x03};
+  auto d = stun::Deserializer{testing_data};
+
+  auto arr = d.GetArray<uint8_t>(4);
+
+  ASSERT_EQ(arr.size(), 4);
+  ASSERT_EQ(arr[0], 0);
+  ASSERT_EQ(arr[1], 1);
+  ASSERT_EQ(arr[2], 2);
+  ASSERT_EQ(arr[3], 3);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(DeserializerTest, deserialize_array_uint16) {
+  std::vector<uint8_t> testing_data = {0x01, 0x00, 0x02, 0x01,
+                                       0x03, 0x02, 0x04, 0x03};
+  auto d = stun::Deserializer{testing_data};
+
+  auto arr = d.GetArray<uint16_t>(4);
+
+  ASSERT_EQ(arr.size(), 4);
+  ASSERT_EQ(arr[0], 0x0100);
+  ASSERT_EQ(arr[1], 0x0201);
+  ASSERT_EQ(arr[2], 0x0302);
+  ASSERT_EQ(arr[3], 0x0403);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(DeserializerTest, deserialize_array_uint32) {
+  std::vector<uint8_t> testing_data = {0x01, 0x00, 0x02, 0x01,
+                                       0x03, 0x02, 0x04, 0x03};
+  auto d = stun::Deserializer{testing_data};
+
+  auto arr = d.GetArray<uint32_t>(2);
+
+  ASSERT_EQ(arr.size(), 2);
+  ASSERT_EQ(arr[0], 0x01000201);
+  ASSERT_EQ(arr[1], 0x03020403);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(DeserializerTest, deserialize_array_uint64) {
+  std::vector<uint8_t> testing_data = {0x01, 0x00, 0x02, 0x01, 0x03, 0x02,
+                                       0x04, 0x03, 0x05, 0x0A, 0xFF, 0xE4,
+                                       0x11, 0x33, 0x91, 0xD6};
+  auto d = stun::Deserializer{testing_data};
+
+  auto arr = d.GetArray<uint64_t>(2);
+
+  ASSERT_EQ(arr.size(), 2);
+  ASSERT_EQ(arr[0], 0x0100020103020403);
+  ASSERT_EQ(arr[1], 0x050AFFE4113391D6);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(DeserializerTest, pop) {
+  std::vector<uint8_t> testing_data = {0x01, 0x00, 0x02, 0x01};
+  auto d = stun::Deserializer{testing_data};
+
+  d.Pop(1);
+  ASSERT_EQ(d.Get<uint8_t>(), 0x00);
+  d.Pop(1);
+  ASSERT_EQ(d.Get<uint8_t>(), 0x01);
+  ASSERT_ANY_THROW(d.Pop(1));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(DeserializerTest, has_data) {
+  std::vector<uint8_t> testing_data = {0x01};
+  auto d = stun::Deserializer{testing_data};
+
+  ASSERT_TRUE(d.HasData());
+  d.Pop(1);
+  ASSERT_FALSE(d.HasData());
+}

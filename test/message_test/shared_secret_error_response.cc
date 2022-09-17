@@ -135,3 +135,65 @@ TEST(SharedSecretErrorResponseTest, serialize_with_unknown_attributes) {
   ASSERT_EQ(s.Data().size(), check.size());
   ASSERT_EQ(s.Data(), check);
 }
+
+//------------------------------------------------------------------------------
+
+TEST(SharedSecretErrorResponseTest, deserialize) {
+  const std::vector<uint8_t> id = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                                   0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+                                   0x0C, 0x0D, 0x0E, 0x0F};
+
+  const std::vector<uint8_t> data = {
+      0x01, 0x12, 0x00, 0x7c, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+      0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00, 0x09, 0x00, 0x0c,
+      0x00, 0x00, 0x02, 0x0B, 'e',  'r',  'r',  't',  'e',  'x',  't',  0x00};
+
+  auto message = Message::FromRaw(data);
+
+  ASSERT_EQ(message.Type(), MessageType::SharedSecretErrorResponse);
+  ASSERT_EQ(message.TransactionId(), id);
+  ASSERT_TRUE(message.HasAttribute(AttributeType::ErrorCode));
+
+  auto attr = std::dynamic_pointer_cast<ErrorCode>(
+      message.Attribute(AttributeType::ErrorCode));
+
+  ASSERT_NE(attr, nullptr);
+  ASSERT_EQ(attr->Code(), 211);
+  ASSERT_EQ(attr->Message(), "errtext");
+}
+
+//------------------------------------------------------------------------------
+
+TEST(SharedSecretErrorResponseTest, deserialize_with_unknown_attributes) {
+  const std::vector<uint8_t> id = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                                   0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+                                   0x0C, 0x0D, 0x0E, 0x0F};
+
+  const std::vector<uint8_t> data = {
+      0x01, 0x12, 0x00, 0x7c, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+      0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00, 0x09,
+      0x00, 0x0c, 0x00, 0x00, 0x02, 0x0B, 'e',  'r',  'r',  't',  'e',
+      'x',  't',  0x00, 0x00, 0x0a, 0x00, 0x04, 0x00, 0x05, 0x00, 0x01};
+
+  auto message = Message::FromRaw(data);
+
+  ASSERT_EQ(message.Type(), MessageType::SharedSecretErrorResponse);
+  ASSERT_EQ(message.TransactionId(), id);
+  ASSERT_TRUE(message.HasAttribute(AttributeType::ErrorCode));
+  ASSERT_TRUE(message.HasAttribute(AttributeType::UnknownAttributes));
+
+  auto err_attr = std::dynamic_pointer_cast<ErrorCode>(
+      message.Attribute(AttributeType::ErrorCode));
+
+  ASSERT_NE(err_attr, nullptr);
+  ASSERT_EQ(err_attr->Code(), 211);
+  ASSERT_EQ(err_attr->Message(), "errtext");
+
+  auto ua_attr = std::dynamic_pointer_cast<UnknownAttributes>(
+      message.Attribute(AttributeType::UnknownAttributes));
+
+  ASSERT_NE(ua_attr, nullptr);
+  ASSERT_TRUE(ua_attr->IsContain(AttributeType::ChangedAddress));
+  ASSERT_TRUE(ua_attr->IsContain(AttributeType::MappedAddress));
+  ASSERT_EQ(ua_attr->Data().size(), 2);
+}

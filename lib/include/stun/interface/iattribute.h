@@ -6,6 +6,7 @@
 
 #include "stun/enums/attribute_type.h"
 #include "stun/serializer.h"
+#include "stun/deserializer.h"
 
 namespace stun {
 
@@ -27,6 +28,7 @@ class IAttribute {
   uint16_t Length() { return DataLength() + 4; }
 
   virtual void Serialize(Serializer& s) const = 0;
+  virtual void Deserialize(Deserializer& d) = 0;
 
  protected:
   virtual uint16_t DataLength() const = 0;

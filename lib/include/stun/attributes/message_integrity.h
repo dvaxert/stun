@@ -7,13 +7,15 @@ namespace stun {
 
 class MessageIntegrity final : public IAttribute {
  public:
-  MessageIntegrity(const std::vector<uint8_t>& raw_data = {});
+  MessageIntegrity() = default;
+  MessageIntegrity(const std::vector<uint8_t>& raw_data);
   ~MessageIntegrity() override = default;
 
   AttributeType Type() const override;
   std::vector<uint8_t> Value() const;
 
   void Serialize(Serializer& s) const override;
+  void Deserialize(Deserializer& d) override;
 
  private:
   uint16_t DataLength() const override;

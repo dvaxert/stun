@@ -11,6 +11,17 @@ void AddressAttribute::Serialize(Serializer& s) const {
 
 //------------------------------------------------------------------------------
 
+void AddressAttribute::Deserialize(Deserializer& d) {
+  auto length = d.Get<uint16_t>();
+  if (length != DataLength()) throw std::runtime_error("Incorrect attribute");
+
+  d.Pop(2);
+  port_ = d.Get<uint16_t>();
+  address_ = d.Get<uint32_t>();
+}
+
+//------------------------------------------------------------------------------
+
 uint8_t AddressAttribute::Family() const { return 0x01; }
 
 //------------------------------------------------------------------------------

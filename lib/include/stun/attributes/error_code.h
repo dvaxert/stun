@@ -21,6 +21,7 @@ class ErrorCode final : public IAttribute {
     GlobalFailure = 600
   };
 
+  ErrorCode() = default;
   explicit ErrorCode(PredefinedError error);
   ErrorCode(uint32_t code, std::string message);
   ~ErrorCode() override = default;
@@ -31,6 +32,7 @@ class ErrorCode final : public IAttribute {
   std::string Message() const;
 
   void Serialize(Serializer& s) const override;
+  void Deserialize(Deserializer& d) override;
 
  private:
   size_t AlignSize() const;

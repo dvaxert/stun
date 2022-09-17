@@ -7,6 +7,7 @@ namespace stun {
 
 class ChangeRequest final : public IAttribute {
  public:
+  ChangeRequest() = default;
   ChangeRequest(bool change_ip, bool change_port);
   ~ChangeRequest() override = default;
 
@@ -16,6 +17,7 @@ class ChangeRequest final : public IAttribute {
   bool ChangePort() const;
 
   void Serialize(Serializer& s) const override;
+  void Deserialize(Deserializer& d) override;
 
  private:
   uint16_t DataLength() const override;

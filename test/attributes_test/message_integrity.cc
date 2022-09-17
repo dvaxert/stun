@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <stun/attributes/message_integrity.h>
 #include <stun/serializer.h>
+#include <stun/deserializer.h>
 #include <testing_utils/address.h>
 #include <testing_utils/convert.h>
 #include <testing_utils/random.h>
@@ -40,7 +41,7 @@ TEST(MessageIntegrityTest, create_with_data) {
 //------------------------------------------------------------------------------
 
 TEST(MessageIntegrityTest, serialize_no_data) {
-  auto attribute = MessageIntegrity();
+  auto attribute = MessageIntegrity(std::vector<uint8_t>());
   Serializer s{};
 
   std::vector<uint8_t> check{0x00, 0x08, 0x00, 0x3C, 0xda, 0x39, 0xa3, 0xee,
@@ -72,4 +73,25 @@ TEST(MessageIntegrityTest, serialize_with_data) {
 
   ASSERT_EQ(s.Data().size(), check.size());
   ASSERT_EQ(s.Data(), check);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MessageIntegrityTest, deserialize) {
+  auto attribute = MessageIntegrity();
+
+  std::vector<uint8_t> data = {0x00, 0x3C, 0x2e, 0xb4, 0x84, 0xcf, 0x4b, 0x77,
+                               0xe4, 0x1f, 0x20, 0xc4, 0x80, 0xf3, 0xf8, 0x3e,
+                               0xe9, 0x46, 0x89, 0xb7, 0x8c, 0xab};
+  data.insert(data.end(), 40, 0);
+
+  Deserializer d(data);
+  attribute.Deserialize(d);
+
+  std::vector<uint8_t> check{0x2e, 0xb4, 0x84, 0xcf, 0x4b, 0x77, 0xe4,
+                             0x1f, 0x20, 0xc4, 0x80, 0xf3, 0xf8, 0x3e,
+                             0xe9, 0x46, 0x89, 0xb7, 0x8c, 0xab};
+
+  ASSERT_EQ(attribute.Value(), check);
+  ASSERT_FALSE(d.HasData());
 }

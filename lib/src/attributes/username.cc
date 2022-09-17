@@ -26,6 +26,20 @@ void Username::Serialize(Serializer& s) const {
 
 //------------------------------------------------------------------------------
 
-size_t Username::AlignSize() const { return 4 - name_.size() % 4; }
+void Username::Deserialize(Deserializer& d) {
+  auto length = d.Get<uint16_t>();
+  name_ = d.GetString(length);
+}
+
+//------------------------------------------------------------------------------
+
+size_t Username::AlignSize() const {
+  auto align = name_.size() % 4;
+
+  if (align != 0) {
+    return 4 - align;
+  }
+  return 0;
+}
 
 }  // namespace stun

@@ -24,15 +24,26 @@ TEST(PasswordTest, serialize) {
 
   s& attribute;
 
-  auto align = (4 - testing_pass.size() % 4);
-  auto length_bytes = tests::ToBigEndianBytes(
-      static_cast<uint16_t>(testing_pass.size() + align));
-
-  std::vector<uint8_t> check = {0x00, 0x07};
-  check.insert(check.end(), length_bytes.begin(), length_bytes.end());
-  check.insert(check.end(), testing_pass.begin(), testing_pass.end());
-  check.insert(check.end(), align, 0x00);
+  std::vector<uint8_t> check = {0x00, 0x07, 0x00, 0x10, 'O',  't', 'h',
+                                'e',  'r',  'P',  'a',  's',  's', 'w',
+                                'o',  'r',  'd',  0x00, 0x00, 0x00};
 
   ASSERT_EQ(s.Data().size(), check.size());
   ASSERT_EQ(s.Data(), check);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(PasswordTest, deserialize) {
+  auto attribute = Password();
+
+  std::vector<uint8_t> data = {0x00, 0x10, 'O', 't',  'h',  'e',
+                               'r',  'P',  'a', 's',  's',  'w',
+                               'o',  'r',  'd', 0x00, 0x00, 0x00};
+
+  Deserializer d(data);
+  attribute.Deserialize(d);
+
+  ASSERT_EQ(attribute.Value(), "OtherPassword");
+  ASSERT_FALSE(d.HasData());
 }

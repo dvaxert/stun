@@ -166,3 +166,89 @@ TEST(BindingRequestTest, serialize_with_integrity) {
   ASSERT_EQ(s.Data().size(), check.size());
   ASSERT_EQ(s.Data(), check);
 }
+
+//------------------------------------------------------------------------------
+
+TEST(BindingRequestTest, deserialize) {
+  const std::vector<uint8_t> id = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                                   0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+                                   0x0C, 0x0D, 0x0E, 0x0F};
+
+  std::vector<uint8_t> data = {0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x02,
+                               0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+                               0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
+
+  auto message = Message::FromRaw(data);
+
+  ASSERT_EQ(message.Type(), MessageType::BindingRequest);
+  ASSERT_EQ(message.TransactionId(), id);
+  ASSERT_EQ(message.AllAtributes().size(), 0);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(BindingRequestTest, deserialize_with_attribute) {
+  const std::vector<uint8_t> id = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                                   0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+                                   0x0C, 0x0D, 0x0E, 0x0F};
+
+  const std::vector<uint8_t> data = {
+      0x00, 0x01, 0x00, 0x0C, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+      0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00, 0x02,
+      0x00, 0x08, 0x00, 0x01, 0x04, 0xD2, 0x7F, 0x00, 0x00, 0x01};
+
+  auto message = Message::FromRaw(data);
+
+  ASSERT_EQ(message.Type(), MessageType::BindingRequest);
+  ASSERT_EQ(message.TransactionId(), id);
+  ASSERT_TRUE(message.HasAttribute(AttributeType::ResponseAddress));
+
+  auto attr = std::dynamic_pointer_cast<ResponseAddress>(
+      message.Attribute(AttributeType::ResponseAddress));
+
+  ASSERT_NE(attr, nullptr);
+  ASSERT_EQ(attr->Family(), 0x01);
+  ASSERT_EQ(attr->Port(), 1234);
+  ASSERT_EQ(attr->Address(), 0x7F000001);  // 127.0.0.1
+}
+
+//------------------------------------------------------------------------------
+
+TEST(BindingRequestTest, deserialize_with_integrity) {
+  const std::vector<uint8_t> id = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                                   0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+                                   0x0C, 0x0D, 0x0E, 0x0F};
+
+  std::vector<uint8_t> data = {
+      0x00, 0x01, 0x00, 0x4C, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+      0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00, 0x02, 0x00, 0x08,
+      0x00, 0x01, 0x04, 0xD2, 0x7F, 0x00, 0x00, 0x01, 0x00, 0x08, 0x00, 0x3C,
+      0xA8, 0xEC, 0xBF, 0xC7, 0xC7, 0xC0, 0xA6, 0xB3, 0xBE, 0x3D, 0x6B, 0xEE,
+      0x0A, 0x66, 0x4D, 0x42, 0x82, 0xB2, 0xEF, 0xC8};
+  data.insert(data.end(), 40, 0);
+
+  auto message = Message::FromRaw(data);
+
+  ASSERT_EQ(message.Type(), MessageType::BindingRequest);
+  ASSERT_EQ(message.TransactionId(), id);
+  ASSERT_TRUE(message.HasAttribute(AttributeType::ResponseAddress));
+  ASSERT_TRUE(message.HasAttribute(AttributeType::MessageIntegrity));
+
+  auto ra_attr = std::dynamic_pointer_cast<ResponseAddress>(
+      message.Attribute(AttributeType::ResponseAddress));
+
+  ASSERT_NE(ra_attr, nullptr);
+  ASSERT_EQ(ra_attr->Family(), 0x01);
+  ASSERT_EQ(ra_attr->Port(), 1234);
+  ASSERT_EQ(ra_attr->Address(), 0x7F000001);  // 127.0.0.1
+
+  auto mi_attr = std::dynamic_pointer_cast<MessageIntegrity>(
+      message.Attribute(AttributeType::MessageIntegrity));
+
+  const std::vector<uint8_t> integrity_check = {
+      0xA8, 0xEC, 0xBF, 0xC7, 0xC7, 0xC0, 0xA6, 0xB3, 0xBE, 0x3D,
+      0x6B, 0xEE, 0x0A, 0x66, 0x4D, 0x42, 0x82, 0xB2, 0xEF, 0xC8};
+
+  ASSERT_NE(mi_attr, nullptr);
+  ASSERT_EQ(mi_attr->Value(), integrity_check);
+}

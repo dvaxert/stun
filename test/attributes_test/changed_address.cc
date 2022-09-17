@@ -79,3 +79,18 @@ TEST(ChangedAddressTest, serialize_from_int) {
   ASSERT_EQ(s.Data().size(), check.size());
   ASSERT_EQ(s.Data(), check);
 }
+
+//------------------------------------------------------------------------------
+
+TEST(ChangedAddressTest, deserialize) {
+  auto attribute = ChangedAddress();
+
+  std::vector<uint8_t> data = {0x00, 0x08, 0x00, 0x01, 0x6A,
+                               0xDC, 0x7F, 0x00, 0x00, 0x01};
+  Deserializer d(data);
+  attribute.Deserialize(d);
+
+  ASSERT_EQ(attribute.Address(), 0x7f000001);  // 127.0.0.1
+  ASSERT_EQ(attribute.Port(), 0x6ADC);         // 27356
+  ASSERT_FALSE(d.HasData());
+}

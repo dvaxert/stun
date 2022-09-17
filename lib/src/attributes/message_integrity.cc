@@ -2,6 +2,8 @@
 #include "stun/utils/sha1.h"
 #include "stun/utils/to_integral.h"
 
+#include <stdexcept>
+
 namespace stun {
 
 MessageIntegrity::MessageIntegrity(const std::vector<uint8_t>& raw_data)
@@ -29,6 +31,16 @@ std::vector<uint8_t> MessageIntegrity::Value() const { return hmac1_key_; }
 void MessageIntegrity::Serialize(Serializer& s) const {
   s& utils::to_integral(Type()) & DataLength() & Value() &
       std::vector<uint8_t>(40, 0);
+}
+
+//------------------------------------------------------------------------------
+
+void MessageIntegrity::Deserialize(Deserializer& d) {
+  auto length = d.Get<uint16_t>();
+  if (length != DataLength()) throw std::runtime_error("Incorrect attribute");
+
+  hmac1_key_ = d.GetArray<uint8_t>(20);
+  d.Pop(40);
 }
 
 }  // namespace stun

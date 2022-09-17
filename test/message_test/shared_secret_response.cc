@@ -60,12 +60,45 @@ TEST(SharedSecretResponseTest, serialize) {
   s& message;
 
   std::vector<uint8_t> check = {
-      0x01, 0x02, 0x00, 0x20, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+      0x01, 0x02, 0x00, 0x18, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
       0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00, 0x06,
-      0x00, 0x0c, 'S',  'o',  'm',  'e',  'N',  'a',  'm',  'e',  0x00,
-      0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x0c, 'S',  'o',  'm',  'e',
-      'P',  'a',  's',  's',  0x00, 0x00, 0x00, 0x00};
+      0x00, 0x08, 'S',  'o',  'm',  'e',  'N',  'a',  'm',  'e',  0x00,
+      0x07, 0x00, 0x08, 'S',  'o',  'm',  'e',  'P',  'a',  's',  's'};
 
   ASSERT_EQ(s.Data().size(), check.size());
   ASSERT_EQ(s.Data(), check);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(SharedSecretResponseTest, deserialize) {
+  const std::vector<uint8_t> id = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                                   0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+                                   0x0C, 0x0D, 0x0E, 0x0F};
+
+  const std::vector<uint8_t> data = {
+      0x01, 0x02, 0x00, 0x18, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+      0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00, 0x06,
+      0x00, 0x08, 'S',  'o',  'm',  'e',  'N',  'a',  'm',  'e',  0x00,
+      0x07, 0x00, 0x08, 'S',  'o',  'm',  'e',  'P',  'a',  's',  's'};
+
+  auto message = Message::FromRaw(data);
+
+  ASSERT_EQ(message.Type(), MessageType::SharedSecretResponse);
+  ASSERT_EQ(message.TransactionId(), id);
+  ASSERT_TRUE(message.AllAtributes().size(), 2);
+  ASSERT_TRUE(message.HasAttribute(AttributeType::Username));
+  ASSERT_TRUE(message.HasAttribute(AttributeType::Password));
+
+  auto pass = std::dynamic_pointer_cast<Password>(
+      message.Attribute(AttributeType::Password));
+
+  ASSERT_NE(pass, nullptr);
+  ASSERT_EQ(pass->Value(), "SomePass");
+
+  auto uname = std::dynamic_pointer_cast<Username>(
+      message.Attribute(AttributeType::Username));
+
+  ASSERT_NE(uname, nullptr);
+  ASSERT_EQ(uname->Value(), "SomeName");
 }

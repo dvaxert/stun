@@ -5,11 +5,13 @@
 
 #include "stun/interface/iattribute.h"
 #include "stun/utils/to_integral.h"
+#include "stun/deserializer.h"
 
 namespace stun {
 
 class AddressAttribute : public IAttribute {
  public:
+  AddressAttribute() = default;
   AddressAttribute(uint32_t address, uint16_t port);
   AddressAttribute(std::string_view address, uint16_t port);
 
@@ -18,6 +20,7 @@ class AddressAttribute : public IAttribute {
   virtual uint32_t Address() const;
 
   void Serialize(Serializer& s) const override;
+  void Deserialize(Deserializer& d) override;
 
  protected:
   virtual uint16_t DataLength() const override;

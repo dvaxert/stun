@@ -9,14 +9,29 @@ Deserializer::Deserializer(std::vector<uint8_t> raw_data)
 
 //------------------------------------------------------------------------------
 
+bool Deserializer::HasData() const { return pos_ < data_.size(); }
+
+//------------------------------------------------------------------------------
+
+void Deserializer::Pop(size_t count) {
+  CheckSize(count);
+  UpdatePos(count);
+}
+
+//------------------------------------------------------------------------------
+
 std::string Deserializer::GetString(size_t string_size) {
+  if (string_size == 0) {
+    return {};
+  }
+
   CheckSize(string_size);
   auto it_begin = std::next(data_.begin(), pos_);
   auto it_end = std::next(it_begin, string_size);
   pos_ += string_size;
 
   auto result = std::string(it_begin, it_end);
-  
+
   while (result.back() == '\0') {
     result.pop_back();
   }

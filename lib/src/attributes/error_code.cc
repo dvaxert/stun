@@ -113,6 +113,18 @@ void ErrorCode::Serialize(Serializer& s) const {
 
 //------------------------------------------------------------------------------
 
+void ErrorCode::Deserialize(Deserializer& d) {
+  auto length = d.Get<uint16_t>();
+  if (length < 4) throw std::runtime_error("Incorrect attribute");
+
+  d.Pop(2);
+
+  code_ = d.Get<uint8_t>() * 100 + d.Get<uint8_t>();
+  message_ = d.GetString(length - 4);
+}
+
+//------------------------------------------------------------------------------
+
 size_t ErrorCode::AlignSize() const { return 4 - message_.size() % 4; }
 
 //------------------------------------------------------------------------------

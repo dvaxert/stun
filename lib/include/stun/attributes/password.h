@@ -9,6 +9,7 @@ namespace stun {
 
 class Password final : public IAttribute {
  public:
+  Password() = default;
   explicit Password(std::string password);
   ~Password() override = default;
 
@@ -16,6 +17,7 @@ class Password final : public IAttribute {
   std::string Value() const;
 
   void Serialize(Serializer& s) const override;
+  void Deserialize(Deserializer& d) override;
 
  private:
   uint16_t DataLength() const override;

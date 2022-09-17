@@ -24,15 +24,24 @@ TEST(UsernameTest, serialize) {
 
   s& attribute;
 
-  auto align = (4 - testing_username.size() % 4);
-  auto length_bytes = tests::ToBigEndianBytes(
-      static_cast<uint16_t>(testing_username.size() + align));
-
-  std::vector<uint8_t> check = {0x00, 0x06};
-  check.insert(check.end(), length_bytes.begin(), length_bytes.end());
-  check.insert(check.end(), testing_username.begin(), testing_username.end());
-  check.insert(check.end(), align, 0x00);
+  std::vector<uint8_t> check = {0x00, 0x06, 0x00, 0x0c, 'O', 't',  'h',  'e',
+                                'r',  'U',  's',  'e',  'r', 0x00, 0x00, 0x00};
 
   ASSERT_EQ(s.Data().size(), check.size());
   ASSERT_EQ(s.Data(), check);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(UsernameTest, deserialize) {
+  auto attribute = Username();
+
+  std::vector<uint8_t> data = {0x00, 0x0c, 'O', 't',  'h',  'e',
+                                'r',  'U',  's',  'e',  'r', 0x00, 0x00, 0x00};
+
+  Deserializer d(data);
+  attribute.Deserialize(d);
+
+  ASSERT_EQ(attribute.Value(), "OtherUser");
+  ASSERT_FALSE(d.HasData());
 }

@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <stun/attributes/error_code.h>
 #include <stun/serializer.h>
+#include <stun/deserializer.h>
 #include <testing_utils/error_code_data.h>
 #include <testing_utils/random.h>
 
@@ -100,7 +101,7 @@ TEST(ErrorCodeTest, create_some_error) {
 
 //------------------------------------------------------------------------------
 
-TEST(ErrorCodeTest, serialization_test) {
+TEST(ErrorCodeTest, serialize) {
   const auto testing_code = tests::GenerateRandomValue<uint16_t>(100, 699);
   const auto testing_msg = std::string("some error message");
   auto error = ErrorCode(testing_code, testing_msg);
@@ -129,4 +130,20 @@ TEST(ErrorCodeTest, serialization_test) {
   ASSERT_EQ(error.Message(), testing_msg);
   ASSERT_EQ(s.Data().size(), check.size());
   ASSERT_EQ(s.Data(), check);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(ErrorCodeTest, deserialize) {
+  auto error = ErrorCode();
+
+  std::vector<uint8_t> data = {0x00, 0x10, 0x00, 0x00, 0x03, 0x17,
+                               'T',  'e',  's',  't',  'i',  'n',
+                               'g',  'E',  'r',  'r',  'o',  'r'};
+  Deserializer d(data);
+  error.Deserialize(d);
+
+  ASSERT_EQ(error.Code(), 323);
+  ASSERT_EQ(error.Message(), "TestingError");
+  ASSERT_FALSE(d.HasData());
 }

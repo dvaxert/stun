@@ -2,9 +2,9 @@
 #define STUN_LIB_INCLUDE_STUN_SERALIZER_H_
 
 #include <array>
+#include <boost/endian/conversion.hpp>
 #include <memory>
 #include <vector>
-#include <boost/endian/conversion.hpp>
 
 #include "stun/utils/traits.h"
 

@@ -9,13 +9,15 @@ namespace stun {
 
 class Username final : public IAttribute {
  public:
+  Username() = default;
   explicit Username(std::string name);
   ~Username() override = default;
 
   AttributeType Type() const override;
   std::string Value() const;
 
-  void Serialize(Serializer& s) const;
+  void Serialize(Serializer& s) const override;
+  void Deserialize(Deserializer& d) override;
 
  private:
   size_t AlignSize() const;

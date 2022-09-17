@@ -17,6 +17,7 @@ class MessageBuilder;
 class Message {
  public:
   static MessageBuilder New();
+  static Message FromRaw(std::vector<uint8_t> raw_data);
   ~Message();
 
   MessageType Type() const;

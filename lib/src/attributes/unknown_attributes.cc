@@ -16,6 +16,17 @@ void UnknownAttributes::Serialize(Serializer& s) const {
 
 //------------------------------------------------------------------------------
 
+void UnknownAttributes::Deserialize(Deserializer& d) {
+  auto length = d.Get<uint16_t>();
+  attributes_ = d.GetArray<AttributeType>(length / 2);
+
+  if (*attributes_.rbegin() == *(attributes_.rbegin() + 1)) {
+    attributes_.pop_back();
+  }
+}
+
+//------------------------------------------------------------------------------
+
 bool UnknownAttributes::IsNeedAlign() const {
   return (attributes_.size() % 2) != 0;
 }

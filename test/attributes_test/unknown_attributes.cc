@@ -114,3 +114,44 @@ TEST(UnknownAttributesTest, serialize_three_value) {
   ASSERT_EQ(s.Data().size(), check.size());
   ASSERT_EQ(s.Data(), check);
 }
+
+//------------------------------------------------------------------------------
+
+TEST(UnknownAttributesTest, deserialize_two_value) {
+  auto attribute = UnknownAttributes{};
+
+  std::vector<uint8_t> data = {0x00, 0x04, 0x00, 0x05, 0x00, 0x03};
+
+  Deserializer d(data);
+  attribute.Deserialize(d);
+
+  std::vector<AttributeType> check = {AttributeType::ChangedAddress,
+                                      AttributeType::ChangeRequest};
+
+  ASSERT_EQ(attribute.Data(), check);
+  ASSERT_TRUE(attribute.IsContain(AttributeType::ChangedAddress));
+  ASSERT_TRUE(attribute.IsContain(AttributeType::ChangeRequest));
+  ASSERT_FALSE(d.HasData());
+}
+
+//------------------------------------------------------------------------------
+
+TEST(UnknownAttributesTest, deserialize_three_value) {
+  auto attribute = UnknownAttributes{};
+
+  std::vector<uint8_t> data = {0x00, 0x08, 0x00, 0x05, 0x00,
+                               0x03, 0x00, 0x09, 0x00, 0x09};
+
+  Deserializer d(data);
+  attribute.Deserialize(d);
+
+  std::vector<AttributeType> check = {AttributeType::ChangedAddress,
+                                      AttributeType::ChangeRequest,
+                                      AttributeType::ErrorCode};
+
+  ASSERT_EQ(attribute.Data(), check);
+  ASSERT_TRUE(attribute.IsContain(AttributeType::ChangedAddress));
+  ASSERT_TRUE(attribute.IsContain(AttributeType::ChangeRequest));
+  ASSERT_TRUE(attribute.IsContain(AttributeType::ErrorCode));
+  ASSERT_FALSE(d.HasData());
+}

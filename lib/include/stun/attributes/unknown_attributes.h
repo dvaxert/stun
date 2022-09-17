@@ -23,6 +23,7 @@ class UnknownAttributes final : public IAttribute {
   bool IsContain(const AttributeType attr);
 
   void Serialize(Serializer& s) const override;
+  void Deserialize(Deserializer& d) override;
 
  private:
   bool IsNeedAlign() const;
