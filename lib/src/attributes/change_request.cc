@@ -1,3 +1,5 @@
+#include <fmt/format.h>
+
 #include <stdexcept>
 
 #include "stun/attributes/change_request.h"
@@ -34,6 +36,13 @@ void ChangeRequest::Deserialize(Deserializer& d) {
 
   change_ip_ = data & 4;
   change_port_ = data & 2;
+}
+
+//------------------------------------------------------------------------------
+
+std::string ChangeRequest::ToString() const {
+  return fmt::format("[ChangeRequest: change_ip: {0}, change_port: {1}]",
+                     change_ip_, change_port_);
 }
 
 //------------------------------------------------------------------------------

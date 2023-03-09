@@ -34,6 +34,8 @@ class ErrorCode final : public IAttribute {
   void Serialize(Serializer& s) const override;
   void Deserialize(Deserializer& d) override;
 
+  virtual std::string ToString() const;
+
  private:
   size_t AlignSize() const;
   uint16_t DataLength() const override;

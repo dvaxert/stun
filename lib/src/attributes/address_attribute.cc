@@ -1,6 +1,9 @@
+#include <fmt/format.h>
+
 #include <boost/asio/ip/address.hpp>
 
 #include "stun/attributes/address_attribute.h"
+#include "stun/utils/to_string.h"
 
 namespace stun {
 
@@ -22,6 +25,13 @@ void AddressAttribute::Deserialize(Deserializer& d) {
 
 //------------------------------------------------------------------------------
 
+std::string AddressAttribute::ToString() const {
+  return fmt::format("[{0}: {1}:{2}]", utils::ToString(Type()), Address(),
+                     Port());
+}
+
+//------------------------------------------------------------------------------
+
 uint8_t AddressAttribute::Family() const { return 0x01; }
 
 //------------------------------------------------------------------------------
@@ -30,7 +40,9 @@ uint16_t AddressAttribute::Port() const { return port_; }
 
 //------------------------------------------------------------------------------
 
-uint32_t AddressAttribute::Address() const { return address_; }
+std::string AddressAttribute::Address() const {
+  return boost::asio::ip::address_v4(address_).to_string();
+}
 
 //------------------------------------------------------------------------------
 

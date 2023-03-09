@@ -16,8 +16,8 @@ endif ()
 
 list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(NestingFileSearch)
-include(CMakeDependentOption)
+include (NestingFileSearch)
+include (CMakeDependentOption)
 
 
 # Options available for project customization
@@ -25,7 +25,7 @@ include(CMakeDependentOption)
 cmake_dependent_option (STUN_BUILD_SHARED_LIBS "Build the project as a dynamic library" "${BUILD_SHARED_LIBS}" "STUN_MASTER_PROJECT" ${STUN_MASTER_PROJECT})
 cmake_dependent_option (STUN_BUILD_TESTING "Build tests for the project" "${BUILD_TESTING}" "STUN_MASTER_PROJECT" ${STUN_MASTER_PROJECT})
 
-option (STUN_BUILD_APPS "Build applications" OFF)
+option (STUN_BUILD_APPS "Build applications" ON)
 option (STUN_INSTALL "Generate a target for project installation" ON)
 option (STUN_BUILD_EXAMPLE "Build examples for a project" OFF)
 option (STUN_GENERATE_DOCUMENTATION "Generate documentation when building a project" OFF)
@@ -83,6 +83,7 @@ if (STUN_BUILD_TESTING)
     include (CTest)
     enable_testing ()
 endif ()
+
 
 # Adding subdirectories to the project
 

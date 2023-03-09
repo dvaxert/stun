@@ -3,9 +3,9 @@
 
 #include <string>
 
+#include "stun/deserializer.h"
 #include "stun/interface/iattribute.h"
 #include "stun/utils/to_integral.h"
-#include "stun/deserializer.h"
 
 namespace stun {
 
@@ -17,10 +17,12 @@ class AddressAttribute : public IAttribute {
 
   virtual uint8_t Family() const;
   virtual uint16_t Port() const;
-  virtual uint32_t Address() const;
+  virtual std::string Address() const;
 
   void Serialize(Serializer& s) const override;
   void Deserialize(Deserializer& d) override;
+
+  std::string ToString() const override;
 
  protected:
   virtual uint16_t DataLength() const override;

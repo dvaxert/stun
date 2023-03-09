@@ -1,6 +1,7 @@
 #include <cassert>
 #include <memory>
 #include <random>
+#include <algorithm>
 
 #include "stun/message.h"
 #include "stun/message_builder.h"

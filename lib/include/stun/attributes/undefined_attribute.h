@@ -8,13 +8,15 @@ namespace stun {
 class UndefinedAttribute final : public IAttribute {
  public:
   UndefinedAttribute() = default;
-  UndefinedAttribute(uint16_t code, std::vector<uint8_t> data);
+  UndefinedAttribute(uint16_t code, std::vector<uint8_t> data = {});
 
   AttributeType Type() const override;
   std::vector<uint8_t> Data() const;
 
   void Serialize(Serializer& s) const;
   void Deserialize(Deserializer& d);
+
+  virtual std::string ToString() const;
 
  private:
   uint16_t DataLength() const;

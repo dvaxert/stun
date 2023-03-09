@@ -19,6 +19,8 @@ class ChangeRequest final : public IAttribute {
   void Serialize(Serializer& s) const override;
   void Deserialize(Deserializer& d) override;
 
+  virtual std::string ToString() const;
+
  private:
   uint16_t DataLength() const override;
 

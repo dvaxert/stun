@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <vector>
 
+#include "stun/deserializer.h"
 #include "stun/enums/attribute_type.h"
 #include "stun/serializer.h"
-#include "stun/deserializer.h"
 
 namespace stun {
 
@@ -29,6 +29,8 @@ class IAttribute {
 
   virtual void Serialize(Serializer& s) const = 0;
   virtual void Deserialize(Deserializer& d) = 0;
+
+  virtual std::string ToString() const = 0;
 
  protected:
   virtual uint16_t DataLength() const = 0;

@@ -14,6 +14,7 @@ class Serializer final {
  public:
   std::vector<uint8_t> Data() const;
   void AlignData(size_t align);
+  void Clean();
 
   template <class T, std::enable_if_t<std::is_pod_v<T>, bool> = true>
   Serializer& Serialize(const T& value) {

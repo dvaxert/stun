@@ -1,6 +1,9 @@
+#include <fmt/format.h>
+
 #include <stdexcept>
 
 #include "stun/attributes/undefined_attribute.h"
+#include "stun/utils/to_string.h"
 
 namespace stun {
 
@@ -28,6 +31,13 @@ void UndefinedAttribute::Serialize(Serializer& s) const {
 void UndefinedAttribute::Deserialize(Deserializer& d) {
   auto length = d.Get<uint16_t>();
   data_ = d.GetArray<uint8_t>(length);
+}
+
+//------------------------------------------------------------------------------
+
+std::string UndefinedAttribute::ToString() const {
+  return fmt::format("[UndefinedAttribute: code: {0}, data: {1}]", code_,
+                     stun::utils::ToHexString(data_));
 }
 
 //------------------------------------------------------------------------------

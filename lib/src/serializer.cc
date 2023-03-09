@@ -1,4 +1,5 @@
 #include <stdexcept>
+
 #include "stun/serializer.h"
 
 namespace stun {
@@ -18,6 +19,13 @@ void Serializer::AlignData(size_t align) {
 
     size_ += need_to_add;
   }
+}
+
+//------------------------------------------------------------------------------
+
+void Serializer::Clean() {
+  std::memset(data_.data(), 0, size_);
+  size_ = 0;
 }
 
 //------------------------------------------------------------------------------

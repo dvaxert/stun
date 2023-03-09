@@ -1,3 +1,5 @@
+#include <fmt/format.h>
+
 #include <stdexcept>
 
 #include "stun/attributes/error_code.h"
@@ -121,6 +123,12 @@ void ErrorCode::Deserialize(Deserializer& d) {
 
   code_ = d.Get<uint8_t>() * 100 + d.Get<uint8_t>();
   message_ = d.GetString(length - 4);
+}
+
+//------------------------------------------------------------------------------
+
+std::string ErrorCode::ToString() const {
+  return fmt::format("[ErrorCode: code: {1}, message: {2}]", code_, message_);
 }
 
 //------------------------------------------------------------------------------

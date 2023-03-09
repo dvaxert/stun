@@ -1,3 +1,5 @@
+#include <fmt/format.h>
+
 #include "stun/attributes/password.h"
 #include "stun/utils/to_integral.h"
 
@@ -29,6 +31,12 @@ void Password::Serialize(Serializer& s) const {
 void Password::Deserialize(Deserializer& d) {
   auto length = d.Get<uint16_t>();
   password_ = d.GetString(length);
+}
+
+//------------------------------------------------------------------------------
+
+std::string Password::ToString() const {
+  return fmt::format("[Password: {0}]", password_);
 }
 
 //------------------------------------------------------------------------------

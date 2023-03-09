@@ -1,3 +1,5 @@
+#include <fmt/format.h>
+
 #include "stun/attributes/username.h"
 #include "stun/utils/to_integral.h"
 
@@ -29,6 +31,12 @@ void Username::Serialize(Serializer& s) const {
 void Username::Deserialize(Deserializer& d) {
   auto length = d.Get<uint16_t>();
   name_ = d.GetString(length);
+}
+
+//------------------------------------------------------------------------------
+
+std::string Username::ToString() const {
+  return fmt::format("[Username: {0}]", name_);
 }
 
 //------------------------------------------------------------------------------

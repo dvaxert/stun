@@ -3,6 +3,8 @@
 # Find the dependencies
 
 find_package(Boost REQUIRED)
+find_package(Fmt REQUIRED)      # TODO std 20
+find_package(spdlog REQUIRED)
 
 # Define the library type
 if (STUN_BUILD_SHARED_LIBS)
@@ -42,9 +44,17 @@ target_include_directories(stun
         $<INSTALL_INTERFACE:include>
 )
 
+unset (STUN_ADDITIONAL_LIBRARIES)
+if (WIN32)
+    set(STUN_ADDITIONAL_LIBRARIES iphlpapi ws2_32)
+endif()
+
 target_link_libraries(stun 
     PRIVATE
         Boost::boost
+        fmt::fmt        # TODO std 20
+        spdlog::spdlog
+        ${STUN_ADDITIONAL_LIBRARIES}
 )
 
 foreach(HEADER ${STUN_HEADERS})

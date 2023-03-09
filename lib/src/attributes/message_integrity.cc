@@ -1,8 +1,11 @@
+#include <fmt/format.h>
+
+#include <stdexcept>
+
 #include "stun/attributes/message_integrity.h"
 #include "stun/utils/sha1.h"
 #include "stun/utils/to_integral.h"
-
-#include <stdexcept>
+#include "stun/utils/to_string.h"
 
 namespace stun {
 
@@ -41,6 +44,13 @@ void MessageIntegrity::Deserialize(Deserializer& d) {
 
   hmac1_key_ = d.GetArray<uint8_t>(20);
   d.Pop(40);
+}
+
+//------------------------------------------------------------------------------
+
+std::string MessageIntegrity::ToString() const {
+  return fmt::format("[MessageIntegrity: {0}]",
+                     stun::utils::ToHexString(hmac1_key_));
 }
 
 }  // namespace stun
